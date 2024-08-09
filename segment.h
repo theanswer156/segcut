@@ -72,6 +72,15 @@ struct Rectangle
     Point LeftUp;
     Point RightDown;
 };
+
+struct  TreeNode
+{
+    double Begin;
+    double End;
+    TreeNode(double begin =  0, double end = 0) :Begin(begin), End(end){}
+    ~TreeNode() {}
+};
+
 class segment{
 public:
     segment(const int& count);
@@ -92,8 +101,10 @@ public:
     void NewtonIterator();                   //      牛顿迭代方法计算等距点的时间值
     void NewtonIterator(const double& begin1,const double& end1,const double& begin2,const double& end2);
                                              //      计算两条曲线在区域[begin1,end1]✖[begin2,end2]里可能的交点
+    void TreeTraverse(TreeNode* leftNode,TreeNode* rightNode);
     double Adapting(double num);
     void filterCrossPoint(double s,double t);
+    void filterCrossPoint();                 //     过滤所有的点
     // double armijoLineSearch(const double s,const double t,const double& alpha0);               //      线性搜索最佳步长
     void computeIsoPoint();
     void computeSelfCrossPoint();             //      计算贝塞尔曲线自相交的交点

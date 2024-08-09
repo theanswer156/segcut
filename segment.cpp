@@ -17,17 +17,17 @@ segment::segment(const int& count)
     setCoeficientBPrime();
     setCoeficientG();
 
-     computeArcLength1();
-     computeArcLength2();
-     getIsoTime1();
-     getIsoTime2();
+//     computeArcLength1();
+//     computeArcLength2();
+//     getIsoTime1();
+//     getIsoTime2();
     computeTimeSeq();
     computeCrossTime();
 //    NewtonIterator();
     // violenceSolution();
      computeIsoPoint();
     computeSelfCrossPoint();
-    findSmallRectangle();
+//    findSmallRectangle();
 }
 segment::segment()
 {
@@ -46,7 +46,7 @@ segment::segment()
     computeCrossTime();
  // NewtonIterator();
  // violenceSolution();
-    computeIsoPoint();
+//    computeIsoPoint();
     computeSelfCrossPoint();
     findSmallRectangle();
 }
@@ -76,23 +76,23 @@ void segment::initial()
 
 void segment::setSrcData()
 {
-     srand(time(0));
-     for(int i = 0;i<=1;++i){
-         for (int j = 0; j < 4; ++j)
-         {
-             srcdata[i].emplace_back(rand()/4e1,rand()/4e1);
-         }
-     }
+//     srand(time(0));
+//     for(size_t i = 0;i<=1;++i){
+//         for (int j = 0; j < 4; ++j)
+//         {
+//             srcdata[i].emplace_back(rand()/4e1,rand()/4e1);
+//         }
+//     }
     
-//   srcdata[0].emplace_back(Point(354.275,547.75));
-//   srcdata[0].emplace_back(Point(631.375,27.2));
-//   srcdata[0].emplace_back(Point(805.75,647.125));
-//   srcdata[0].emplace_back(Point(112.525,252.725));
+    srcdata[0].emplace_back(Point(56.0, 243.0));
+    srcdata[0].emplace_back(Point(500.0, 500.0));
+    srcdata[0].emplace_back(Point(0.0, 500.0));
+    srcdata[0].emplace_back(Point(276.0,137.0));
 
-//   srcdata[1].emplace_back(Point(0.0, 200.0));
-//   srcdata[1].emplace_back(Point(500.0, 500.0));
-//   srcdata[1].emplace_back(Point(0.0, 500.0));
-//   srcdata[1].emplace_back(Point(274.0, 400.0));
+    srcdata[1].emplace_back(Point(0.0, 200.0));
+    srcdata[1].emplace_back(Point(500.0, 500.0));
+    srcdata[1].emplace_back(Point(0.0, 500.0));
+    srcdata[1].emplace_back(Point(274.0, 400.0));
 }
 
 void segment::getDesData()
@@ -103,12 +103,12 @@ void segment::getDesData()
         Point resultPoint0 = {0, 0};
         Point resultPoint1 = {0, 0};
         vector<double> bernstein1(size, 1), bernstein2(size, 1);
-        for (int i = 1; i <= size - 1; ++i)
+        for (size_t i = 1; i <= size - 1; ++i)
         {
             bernstein1[i] *= bernstein1[i - 1] * t;
             bernstein2[size - i - 1] *= bernstein2[size - i] * (1 - t);
         }
-        for (int j = 0; j < size; ++j)
+        for (size_t j = 0; j < size; ++j)
         {
             resultPoint0 += srcdata[0][j] * pascaTri[j + 1] * bernstein1[j] * bernstein2[j];
             resultPoint1 += srcdata[1][j] * pascaTri[j + 1] * bernstein1[j] * bernstein2[j];
@@ -176,7 +176,7 @@ void segment::computeArcLength1()
     vector<vector<double>> romberg(n+1,vector<double>(m+1,0));
     double h = 1;
     romberg[0][0] = h*(compute_f1(0)+compute_f1(h))/2;
-    for(int i = 1;i<=n;++i){
+    for(size_t i = 1;i<=n;++i){
         h/=2;
         double rest = 0;
 
@@ -190,11 +190,11 @@ void segment::computeArcLength1()
             break;
         }
         //!     计算M阶龙贝格积分
-        for(int j = 1;j<=i;++j){
+        for(size_t j = 1;j<=i;++j){
             double error = pow(pow(4,j)-1,-1)*(romberg[i][j-1]-romberg[i-1][j-1]);
             romberg[j-1][i] = error;
             romberg[i][j] = romberg[i][j-1]+error;
-            if(abs(error)<tol){
+            if(fabs(error)<tol){
                 exitLoops = true;
                 arclength[0]=romberg[i][j];
                 break;
@@ -220,7 +220,7 @@ void segment::computeArcLength2()
     vector<vector<double>> romberg(n+1,vector<double>(m+1,0));
     double h = 1;
     romberg[0][0] = h*(compute_f2(0)+compute_f2(h))/2;
-    for(int i = 1;i<=n;++i){
+    for(size_t i = 1;i<=n;++i){
         h/=2;
         double rest = 0;
 
@@ -234,11 +234,11 @@ void segment::computeArcLength2()
             break;
         }
         //!     计算M阶龙贝格积分
-        for(int j = 1;j<=i;++j){
+        for(size_t j = 1;j<=i;++j){
             double error = pow(pow(4,j)-1,-1)*(romberg[i][j-1]-romberg[i-1][j-1]);
             romberg[j-1][i] = error;
             romberg[i][j] = romberg[i][j-1]+error;
-            if(abs(error)<tol){
+            if(fabs(error)<tol){
                 exitLoops = true;
                 arclength[1]=romberg[i][j];
                 break;
@@ -270,7 +270,7 @@ void segment::getIsoTime1()
             //std::cout<<"Compute the "<<i<<"th segment"<<std::endl;
             //std::cout<<"The arclength[0] from 0 to "<<std::setprecision(6)<<mid<<" is "
             //        <<std::setprecision(10)<<F_mid<<std::endl;
-            if(abs(F_mid-subArcLength)<tol){
+            if(fabs(F_mid-subArcLength)<tol){
                 segtime[0].emplace_back(mid);
                 break;
             }
@@ -302,7 +302,7 @@ void segment::getIsoTime2()
             //std::cout<<"Compute the "<<i<<"th segment"<<std::endl;
             //std::cout<<"The arclength[1] from 0 to "<<std::setprecision(6)<<mid<<" is "
             //        <<std::setprecision(10)<<F_mid<<std::endl;
-            if(abs(F_mid-subArcLength)<tol){
+            if(fabs(F_mid-subArcLength)<tol){
                 segtime[1].emplace_back(mid);
                 break;
             }
@@ -328,22 +328,22 @@ void segment::NewtonIterator()
         double x0 = segtime[0].at(segtime[0].size()-1)+1.00/segcount;
         for(int j = 0;j<MaxIterator;++j){
             double f0 = computeSubArcLength1(x0)-subarclength;
-            if(abs(f0)<epslion){
-                //printf("abs(f0): %lf <epslion,stop this loop",f0);
+            if(fabs(f0)<epslion){
+                //printf("fabs(f0): %lf <epslion,stop this loop",f0);
                 //printf("The %lf th segtime[0] is %lf",i,x0);
                 segtime[0].emplace_back(x0);
                 break;
             }
             double df = compute_gradf1(x0);
-            if(abs(df)<delta){
-                //printf("abs(df): %lf <epslion,stop this loop",df);
+            if(fabs(df)<delta){
+                //printf("fabs(df): %lf <epslion,stop this loop",df);
                 //printf("The %lf th segtime[0] is %lf",i,x0);
                 segtime[0].emplace_back(x0);
                 break;
             }
             double x1=x0 - damping*(f0/df);
-            if(abs(x1-x0)<tol){
-                //printf("x0: %lf, x1: %lf .abs(x1-x0)<tol,stop this loop",x0,x1);
+            if(fabs(x1-x0)<tol){
+                //printf("x0: %lf, x1: %lf .fabs(x1-x0)<tol,stop this loop",x0,x1);
                 //printf("The %lf th segtime[0] is %lf",i,x0);
                 segtime[0].emplace_back(x0);
                 break;
@@ -387,7 +387,7 @@ void segment::NewtonIterator(const double &begin1, const double &end1, const dou
         double f1 = pow(point1.x-point2.x,2);
         double f2 = pow(point1.y-point2.y,2);
         double f = f1+f2;
-        if(abs(f)<eps){
+        if(fabs(f)<eps){
             //printf("F is close to zero , stop this iteration.");
             // map.emplace(make_pair(s0,f));
             crosstime.emplace_back(s0);
@@ -402,7 +402,7 @@ void segment::NewtonIterator(const double &begin1, const double &end1, const dou
         double gradb2x = -(point1.x-point2.x)*(coefBPrime[1][0].x*t0*t0+coefBPrime[1][1].x*t0+coefBPrime[1][2].x);
         double gradb2y = -(point1.y-point2.y)*(coefBPrime[1][0].y*t0*t0+coefBPrime[1][1].y*t0+coefBPrime[1][2].y);
         double del = gradb1x*gradb2y-gradb1y*gradb2x;
-        if(abs(del)<eps){
+        if(fabs(del)<eps){
             //printf("DF is close to zero , stop this iteration. We get Nothing");
             s0 = dis(gen);
             t0 = dis(gen);
@@ -413,7 +413,7 @@ void segment::NewtonIterator(const double &begin1, const double &end1, const dou
 
         double s1 = s0-Adapting(deltas);
         double t1 = t0-Adapting(deltat);
-        if(abs(s1-s0)+abs(t0-t1)<tol){
+        if(fabs(s1-s0)+fabs(t0-t1)<tol){
             //printf("(s1,t1) is close to (s0,t0), stop this iteration");
              crosstime.emplace_back(s1);
 //            map.emplace(make_pair(s0,t0));
@@ -425,11 +425,41 @@ void segment::NewtonIterator(const double &begin1, const double &end1, const dou
     }
     //printf("Reaching the maxiterator time , there is no cross-point betweeen two curve in area (%lf,%lf) times (%lf,%lf).",begin1,end1,begin2,end2);
 }
+//  NOTE:这里判断必须要是&&  因为不这样容易出现某个矩形与一段曲线仅相交很少一部分
+//       如果用逻辑或运算 || 那么很容易出现实际不相交但是却被选入的情况
+//       要么就不考虑非常极端的情况  先把所有找到的点放进去  然后再过滤
+void segment::TreeTraverse(TreeNode* leftNode,TreeNode* rightNode)
+{
+    if (fabs(leftNode->Begin-leftNode->End)<5e-3 && fabs(rightNode->Begin-rightNode->End)<5e-3)
+    {
+        crosstime.emplace_back(leftNode->Begin);
+        filterCrossPoint(leftNode->Begin,rightNode->Begin);
+        return;
+    }
+    Point point1 = computePoint1(leftNode->Begin);
+    Point point2 = computePoint1(leftNode->End);
+    Point point3 = computePoint2(rightNode->Begin);
+    Point point4 = computePoint2(rightNode->End);
+    if (isRectangleIntersecting(point1, point2, point3, point4))
+    {
+        double dLeftMid = (leftNode->Begin + leftNode->End) / 2;
+        double dRightMid = (rightNode->Begin + rightNode->End) / 2;
+        TreeNode* left1 = new TreeNode(leftNode->Begin, dLeftMid);
+        TreeNode* left2 = new TreeNode(dLeftMid, leftNode->End);
+        TreeNode* right1= new TreeNode(rightNode->Begin, dRightMid);
+        TreeNode* right2= new TreeNode(dRightMid, rightNode->End);
+        TreeTraverse(left1, right1);
+        TreeTraverse(left1, right2);
+        TreeTraverse(left2, right2);
+        TreeTraverse(left2, right2);
+    }
+    return;
+}
 
 double segment::Adapting(double num)
 {
-    if(abs(num)<0.05) return num;
-    while(abs(num)>0.05){
+    if(fabs(num)<0.05) return num;
+    while(fabs(num)>0.05){
         num/=10;
     }
     return num;
@@ -450,7 +480,7 @@ void segment::filterCrossPoint(double s,double t)
         double time1 = (*it).first;
         double time2 = (*it).second;
         double f_new = dist(computePoint1(time1),computePoint2(time2));
-        if( (abs(time1-s)+abs(time2-t)) < 1e-2){
+        if( (fabs(time1-s)+fabs(time2-t)) < 5e-4){
             compared = true;
             if(f_new > f){
                 map.emplace(make_pair(s,t));
@@ -464,6 +494,16 @@ void segment::filterCrossPoint(double s,double t)
         map.emplace(make_pair(s,t));
     }
     return;
+}
+
+void segment::filterCrossPoint()
+{
+    if(map.empty())
+    {
+        return;
+    }
+//    sort(map.begin(),map.end());
+//    auto iterCurr = map.begin();
 }
 
 void segment::computeIsoPoint()
@@ -482,13 +522,13 @@ void segment::computeSelfCrossPoint()
         if((coefficient[i].at(0) == Point{0,0})|| (coefficient[i].at(1) == Point{0,0})
                                             ||(coefficient[i].at(2) == Point{0,0})) return;
         double judgement = coefficient[i].at(0).x*coefficient[i].at(1).y-coefficient[i].at(0).y*coefficient[i].at(1).x;
-        if(abs(judgement)<1e-10) return;
+        if(fabs(judgement)<1e-10) return;
         double k1 = (coefficient[i].at(2).x*coefficient[i].at(1).y-coefficient[i].at(2).y*coefficient[i].at(1).x)/judgement;
         double k2 = (coefficient[i].at(0).x*coefficient[i].at(2).y-coefficient[i].at(0).y*coefficient[i].at(2).x)/judgement;
         if(k1>0 || k2>0) return;
         double delta = -4*k1-3*k2*k2;
         //!     当delta判别式等于0的时候  time1==time2  我们把这种情况剔除
-        if(delta<=0) return;
+        if(delta<=0) continue;
         double time1 = (-k2+sqrt(delta))/2;
         double time2 = (-k2-sqrt(delta))/2;
 
@@ -525,35 +565,19 @@ void segment::violenceSolution()
 
 void segment::computeCrossTime()
 {
-    //! 计算两个贝塞尔曲线交点  还是只能采用包络框的方式 由computTimeSeq函数计算
-    //! 得到的两条曲线单调性变化的位置最后由二分法计算   可以得到所有的交点
-    //! 所以我们要做的就是能够快速找到有交的包络框
-    //! 由于timeseq1、timeseq2的定义  我们可以知道在两个时间段内曲线要么是严格凹的
-    //! 要么是严格凸的  
-
-    //      先做退出去的判断   这里不能对crosstime做判断  因为我们是要做递归调用 
-    //      采用类似于剪枝的方法去做的
-    //      其实可以暴力的使用这种方法去计算交点  比如将0-1以0.001分为1000份
-    //      进行一百万次计算就可以精确到0.001  很是不错
-    //      如果通过先暴力  平均分为10份   总共分成100个区域  结合曲线的单调性来
-    //      计算  将在区间内严格单调的
-    //      不是  我直接根据计算而来的两个贝塞尔曲线单调性变化的数据timeseq将
-    //      两个贝塞尔曲线直接分成这些曲线段  然后用牛顿迭代法去找不就是了  这样岂不是更快
-    //      这样最多要执行25次牛顿迭代  但是牛顿迭代是二次收敛的   怕什么
-    //      这种对于两个线段有多个交点的情况还是搜索不到   但是这种情况最多也只有两个交点了
-    //      可以搜索两次  就好了  而且是对于有交点的情况下再搜索一次就好了
-    //      由于其曲线在区域内是严格凹或凸的   所以如果有交点的话  尾部在迭代一次就好了
-    // for(int i = 0;i<timingseq[0].size()-1;++i){
-    //     Point point1 = computePoint1(timingseq[0].at(i));
-    //     Point point2 = computePoint1(timingseq[0].at(i+1));
-    //     for(int j = 0;j<timingseq[1].size()-1;++j){
-    //         Point point3 = computePoint2(timingseq[1].at(j));
-    //         Point point4 = computePoint2(timingseq[1].at(j+1));
-    //         if(isRectangleIntersecting(point1,point2,point3,point4)){
-    //             NewtonIterator(0,1,0,1);
-    //         }
-    //     }
-    // }
+//    for(size_t i = 0;i<timingseq[0].size()-1;++i){
+//        Point point1 = computePoint1(timingseq[0].at(i));
+//        Point point2 = computePoint1(timingseq[0].at(i+1));
+//        TreeNode* leftNode = new TreeNode(timingseq[0].at(i),timingseq[0].at(i + 1));
+//        for(size_t j = 0;j<timingseq[1].size()-1;++j){
+//            Point point3 = computePoint2(timingseq[1].at(j));
+//            Point point4 = computePoint2(timingseq[1].at(j+1));
+//            TreeNode* rightNode = new TreeNode(timingseq[1].at(j), timingseq[1].at(j + 1));
+//            if(isRectangleIntersecting(point1,point2,point3,point4)){
+//             TreeTraverse(leftNode, rightNode);
+//            }
+//        }
+//    }
     NewtonIterator(0,1,0,1);
 }
 
@@ -561,7 +585,7 @@ void segment::computeTimeSeq()
 {   //  计算 x 参数方程单调性变化的两个时间点  我们只要单调性变化的时间点  
     //  恒为常数或者一直递增或递减可以不存入  这些情况都没有单调性的变化
     //  但是这样一直用if 确实不太好
-    for(int i = 0;i<=1;++i){
+    for(size_t i = 0;i<=1;++i){
         timingseq[i].emplace_back(0);
         if(true){
         if(coefBPrime[0].at(0).x != 0){
@@ -645,7 +669,7 @@ void segment::findSmallRectangle()
         Point p1 = computePoint1(timingseq[0][0]);
         Point p2 = computePoint1(timingseq[0][1]);
         double minX = p1.x, maxX = p2.x, minY = p1.y, maxY = p2.y;
-        for (int i = 0; i < timingseq[0].size()-1; ++i)
+        for (size_t i = 0; i < timingseq[0].size()-1; ++i)
         {
             Point p3 = computePoint1(timingseq[0][i]);
             Point p4 = computePoint1(timingseq[0][i+1]);
@@ -662,7 +686,7 @@ void segment::findSmallRectangle()
         Point p1 = computePoint2(timingseq[1][0]);
         Point p2 = computePoint2(timingseq[1][1]);
         double minX = p1.x, maxX = p2.x, minY = p1.y, maxY = p2.y;
-        for (int i = 0; i < timingseq[1].size()-1; ++i)
+        for (size_t i = 0; i < timingseq[1].size()-1; ++i)
         {
             Point p3 = computePoint2(timingseq[1][i]);
             Point p4 = computePoint2(timingseq[1][i + 1]);
@@ -688,7 +712,7 @@ double segment::compute_f1(const double &t)
     result = pow(xvalue,2)+pow(yvalue,2);
 
 
-    result = sqrt(abs(result));
+    result = sqrt(fabs(result));
 //    printf("f(%lf)=%lf",t,result);
     return result;
 }
@@ -701,7 +725,7 @@ double segment::compute_f2(const double &t)
     result = pow(xvalue,2)+pow(yvalue,2);
 
 
-    result = sqrt(abs(result));
+    result = sqrt(fabs(result));
 //    printf("f(%lf)=%lf",t,result);
     return result;
 }
@@ -710,20 +734,20 @@ double segment::compute_gradf1(const double &t)
 {
     double xvalue = coefBPrime[0].at(0).x*t*t+2*coefBPrime[0].at(1).x*t+coefBPrime[0].at(2).x;
     double xsign = xvalue<0?-1:1;
-    xvalue = abs(xvalue)*xsign*2*(coefBPrime[0].at(0).x*t+coefBPrime[0].at(1).x);
+    xvalue = fabs(xvalue)*xsign*2*(coefBPrime[0].at(0).x*t+coefBPrime[0].at(1).x);
     double yvalue = coefBPrime[0].at(0).y*t*t+2*coefBPrime[0].at(1).y*t+coefBPrime[0].at(2).y;
     double ysign = yvalue<0?-1:1;
-    yvalue = abs(yvalue)*ysign*2*(coefBPrime[0].at(0).y*t+coefBPrime[0].at(1).y);
+    yvalue = fabs(yvalue)*ysign*2*(coefBPrime[0].at(0).y*t+coefBPrime[0].at(1).y);
     return xvalue+yvalue;
 }
 double segment::compute_gradf2(const double &t)
 {
     double xvalue = coefBPrime[1].at(0).x*t*t+2*coefBPrime[1].at(1).x*t+coefBPrime[1].at(2).x;
     double xsign = xvalue<0?-1:1;
-    xvalue = abs(xvalue)*xsign*2*(coefBPrime[1].at(0).x*t+coefBPrime[1].at(1).x);
+    xvalue = fabs(xvalue)*xsign*2*(coefBPrime[1].at(0).x*t+coefBPrime[1].at(1).x);
     double yvalue = coefBPrime[1].at(0).y*t*t+2*coefBPrime[1].at(1).y*t+coefBPrime[1].at(2).y;
     double ysign = yvalue<0?-1:1;
-    yvalue = abs(yvalue)*ysign*2*(coefBPrime[1].at(0).y*t+coefBPrime[1].at(1).y);
+    yvalue = fabs(yvalue)*ysign*2*(coefBPrime[1].at(0).y*t+coefBPrime[1].at(1).y);
     return xvalue+yvalue;
 }
 
@@ -739,7 +763,7 @@ double segment::computeSubArcLength1(const double &t)
     vector<vector<double>> romberg(n+1,vector<double>(m+1,0));
     double h = t;
     romberg[0][0] = h*(compute_f1(0)+compute_f1(h))/2;
-    for(int i = 1;i<=n;++i){
+    for(size_t i = 1;i<=n;++i){
         h/=2;
         double rest = 0;
 
@@ -753,11 +777,11 @@ double segment::computeSubArcLength1(const double &t)
             break;
         }
         //!     计算M阶龙贝格积分
-        for(int j = 1;j<=i;++j){
+        for(size_t j = 1;j<=i;++j){
             double error = pow(pow(4,j)-1,-1)*(romberg[i][j-1]-romberg[i-1][j-1]);
             romberg[j-1][i] = error;
             romberg[i][j] = romberg[i][j-1]+error;
-            if(abs(error)<tol){
+            if(fabs(error)<tol){
                 exitLoops = true;
                 result = romberg[i][j];
                 break;
@@ -789,7 +813,7 @@ double segment::computeSubArcLength2(const double &t)
     vector<vector<double>> romberg(n+1,vector<double>(m+1,0));
     double h = t;
     romberg[0][0] = h*(compute_f2(0)+compute_f2(h))/2;
-    for(int i = 1;i<=n;++i){
+    for(size_t i = 1;i<=n;++i){
         h/=2;
         double rest = 0;
 
@@ -803,11 +827,11 @@ double segment::computeSubArcLength2(const double &t)
             break;
         }
         //!     计算M阶龙贝格积分
-        for(int j = 1;j<=i;++j){
+        for(size_t j = 1;j<=i;++j){
             double error = pow(pow(4,j)-1,-1)*(romberg[i][j-1]-romberg[i-1][j-1]);
             romberg[j-1][i] = error;
             romberg[i][j] = romberg[i][j-1]+error;
-            if(abs(error)<tol){
+            if(fabs(error)<tol){
                 exitLoops = true;
                 result = romberg[i][j];
                 break;
@@ -841,7 +865,7 @@ double segment::computeSubArcLength1(const double &begin, const double &end)
     double t2 = end;
     double h = t2-t1;
     romberg[0][0] = h*(compute_f1(t1)+compute_f1(t2))/2;
-    for(int i = 1;i<=n;++i){
+    for(size_t i = 1;i<=n;++i){
         h/=2;
         double rest = 0;
 
@@ -855,11 +879,11 @@ double segment::computeSubArcLength1(const double &begin, const double &end)
             break;
         }
         //!     计算M阶龙贝格积分
-        for(int j = 1;j<=i;++j){
+        for(size_t j = 1;j<=i;++j){
             double error = pow(pow(4,j)-1,-1)*(romberg[i][j-1]-romberg[i-1][j-1]);
             romberg[j-1][i] = error;
             romberg[i][j] = romberg[i][j-1]+error;
-            if(abs(error)<tol){
+            if(fabs(error)<tol){
                 exitLoops = true;
                 result = romberg[i][j];
                 break;
@@ -893,7 +917,7 @@ double segment::computeSubArcLength2(const double &begin, const double &end)
     double t2 = end;
     double h = t2-t1;
     romberg[0][0] = h*(compute_f2(t1)+compute_f2(t2))/2;
-    for(int i = 1;i<=n;++i){
+    for(size_t i = 1;i<=n;++i){
         h/=2;
         double rest = 0;
 
@@ -907,11 +931,11 @@ double segment::computeSubArcLength2(const double &begin, const double &end)
             break;
         }
         //!     计算M阶龙贝格积分
-        for(int j = 1;j<=i;++j){
+        for(size_t j = 1;j<=i;++j){
             double error = pow(pow(4,j)-1,-1)*(romberg[i][j-1]-romberg[i-1][j-1]);
             romberg[j-1][i] = error;
             romberg[i][j] = romberg[i][j-1]+error;
-            if(abs(error)<tol){
+            if(fabs(error)<tol){
                 exitLoops = true;
                 result = romberg[i][j];
                 break;
@@ -938,13 +962,13 @@ Point segment::computePoint1(double &t)
 {
     Point resultPoint;
 
-    int size = srcdata[0].size();
+    size_t size = srcdata[0].size();
     vector<double> bernstein1(size,1),bernstein2(size,1);
-    for(int i = 1;i<=size-1;++i){
+    for(size_t i = 1;i<=size-1;++i){
         bernstein1[i]*=bernstein1[i-1]*t;
         bernstein2[size-i-1]*=bernstein2[size-i]*(1-t);
     }
-    for(int i = 0;i<size;++i){
+    for(size_t i = 0;i<size;++i){
         resultPoint+=srcdata[0][i]*pascaTri[i+1]*bernstein1[i]*bernstein2[i];
     }
     return resultPoint;
@@ -954,13 +978,13 @@ Point segment::computePoint2(double &t)
 {
     Point resultPoint;
 
-    int size = srcdata[1].size();
+    size_t size = srcdata[1].size();
     vector<double> bernstein1(size,1),bernstein2(size,1);
-    for(int i = 1;i<=size-1;++i){
+    for(size_t i = 1;i<=size-1;++i){
         bernstein1[i]*=bernstein1[i-1]*t;
         bernstein2[size-i-1]*=bernstein2[size-i]*(1-t);
     }
-    for(int i = 0;i<size;++i){
+    for(size_t i = 0;i<size;++i){
         resultPoint+=srcdata[1][i]*pascaTri[i+1]*bernstein1[i]*bernstein2[i];
     }
 
@@ -985,7 +1009,7 @@ vector<vector<Point>> segment::outDesData()
 vector<Point> segment::outSelfCrossPoint()
 {   
     if(selfcrosstime.empty()) return vector<Point>();
-    for(int i = 0;i<selfcrosstime.size();++i){
+    for(size_t i = 0;i<selfcrosstime.size();++i){
         if(i%2 == 0){
             selfcrosspoint.emplace_back(computePoint1(selfcrosstime[i]));
         }else{
@@ -997,8 +1021,8 @@ vector<Point> segment::outSelfCrossPoint()
 
 vector<Point> segment::outCrossPoint()
 {
-    if(map.empty()) return vector<Point>();
-    for(auto pair:map){
+
+    for(auto& pair:map){
         double time = pair.first;
         Point point = computePoint1(time);
         crosspoint.emplace_back(point);
